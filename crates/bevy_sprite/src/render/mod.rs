@@ -500,7 +500,7 @@ pub fn queue_sprites(
                 if let Some(rect) = extracted_sprite.rect {
                     let rect_size = rect.size();
                     for uv in &mut uvs {
-                        *uv = (rect.min + *uv * rect_size) / current_image_size;
+                        *uv = (rect.min() + *uv * rect_size) / current_image_size;
                     }
                     quad_size = rect_size;
                 }

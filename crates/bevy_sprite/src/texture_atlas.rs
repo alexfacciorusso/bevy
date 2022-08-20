@@ -108,10 +108,10 @@ impl TextureAtlas {
                     (tile_size.y + y_padding) * y as f32 + offset.y,
                 );
 
-                sprites.push(Rect {
-                    min: rect_min,
-                    max: Vec2::new(rect_min.x + tile_size.x, rect_min.y + tile_size.y),
-                });
+                sprites.push(Rect::new(
+                    rect_min,
+                    Vec2::new(rect_min.x + tile_size.x, rect_min.y + tile_size.y),
+                ));
             }
         }
 

@@ -88,10 +88,10 @@ impl DynamicTextureAtlasBuilder {
 
 impl From<guillotiere::Rectangle> for Rect {
     fn from(rectangle: guillotiere::Rectangle) -> Self {
-        Rect {
-            min: Vec2::new(rectangle.min.x as f32, rectangle.min.y as f32),
-            max: Vec2::new(rectangle.max.x as f32, rectangle.max.y as f32),
-        }
+        Rect::new(
+            Vec2::new(rectangle.min.x as f32, rectangle.min.y as f32),
+            Vec2::new(rectangle.max.x as f32, rectangle.max.y as f32),
+        )
     }
 }
 

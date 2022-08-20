@@ -148,8 +148,8 @@ pub fn ui_focus_system(
                 let mut min = ui_position - extents;
                 let mut max = ui_position + extents;
                 if let Some(clip) = clip {
-                    min = Vec2::max(min, clip.clip.min);
-                    max = Vec2::min(max, clip.clip.max);
+                    min = Vec2::max(min, clip.clip.min());
+                    max = Vec2::min(max, clip.clip.max());
                 }
                 // if the current cursor position is within the bounds of the node, consider it for
                 // clicking

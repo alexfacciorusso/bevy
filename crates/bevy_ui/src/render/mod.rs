@@ -204,10 +204,7 @@ pub fn extract_uinodes(
         extracted_uinodes.uinodes.push(ExtractedUiNode {
             transform: transform.compute_matrix(),
             color: color.0,
-            rect: bevy_sprite::Rect {
-                min: Vec2::ZERO,
-                max: uinode.size,
-            },
+            rect: bevy_sprite::Rect::new(Vec2::ZERO, uinode.size),
             image,
             atlas_size: None,
             clip: clip.map(|clip| clip.clip),
@@ -416,22 +413,24 @@ pub fn prepare_uinodes(
         // Calculate the effect of clipping
         // Note: this won't work with rotation/scaling, but that's much more complex (may need more that 2 quads)
         let positions_diff = if let Some(clip) = extracted_uinode.clip {
+            let clip_min = clip.min();
+            let clip_max = clip.max();
             [
                 Vec2::new(
-                    f32::max(clip.min.x - positions[0].x, 0.),
-                    f32::max(clip.min.y - positions[0].y, 0.),
+                    f32::max(clip_min.x - positions[0].x, 0.),
+                    f32::max(clip_min.y - positions[0].y, 0.),
                 ),
                 Vec2::new(
-                    f32::min(clip.max.x - positions[1].x, 0.),
-                    f32::max(clip.min.y - positions[1].y, 0.),
+                    f32::min(clip_max.x - positions[1].x, 0.),
+                    f32::max(clip_min.y - positions[1].y, 0.),
                 ),
                 Vec2::new(
-                    f32::min(clip.max.x - positions[2].x, 0.),
-                    f32::min(clip.max.y - positions[2].y, 0.),
+                    f32::min(clip_max.x - positions[2].x, 0.),
+                    f32::min(clip_max.y - positions[2].y, 0.),
                 ),
                 Vec2::new(
-                    f32::max(clip.min.x - positions[3].x, 0.),
-                    f32::min(clip.max.y - positions[3].y, 0.),
+                    f32::max(clip_min.x - positions[3].x, 0.),
+                    f32::min(clip_max.y - positions[3].y, 0.),
                 ),
             ]
         } else {
@@ -463,23 +462,25 @@ pub fn prepare_uinodes(
         }
 
         // Clip UVs (Note: y is reversed in UV space)
-        let atlas_extent = extracted_uinode.atlas_size.unwrap_or(uinode_rect.max);
+        let uinode_rect_min = uinode_rect.max();
+        let uinode_rect_max = uinode_rect.min();
+        let atlas_extent = extracted_uinode.atlas_size.unwrap_or(uinode_rect_max);
         let uvs = [
             Vec2::new(
-                uinode_rect.min.x + positions_diff[0].x,
-                uinode_rect.max.y - positions_diff[0].y,
+                uinode_rect_min.x + positions_diff[0].x,
+                uinode_rect_max.y - positions_diff[0].y,
             ),
             Vec2::new(
-                uinode_rect.max.x + positions_diff[1].x,
-                uinode_rect.max.y - positions_diff[1].y,
+                uinode_rect_max.x + positions_diff[1].x,
+                uinode_rect_max.y - positions_diff[1].y,
             ),
             Vec2::new(
-                uinode_rect.max.x + positions_diff[2].x,
-                uinode_rect.min.y - positions_diff[2].y,
+                uinode_rect_max.x + positions_diff[2].x,
+                uinode_rect_min.y - positions_diff[2].y,
             ),
             Vec2::new(
-                uinode_rect.min.x + positions_diff[3].x,
-                uinode_rect.min.y - positions_diff[3].y,
+                uinode_rect_min.x + positions_diff[3].x,
+                uinode_rect_min.y - positions_diff[3].y,
             ),
         ]
         .map(|pos| pos / atlas_extent);
